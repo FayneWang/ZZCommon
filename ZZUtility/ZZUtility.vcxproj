@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug_DLL_MD|Win32">
+      <Configuration>Debug_DLL_MD</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_DLL_MD|x64">
+      <Configuration>Debug_DLL_MD</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_DLL_MD|Win32">
+      <Configuration>Release_DLL_MD</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_DLL_MD|x64">
+      <Configuration>Release_DLL_MD</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3B2745A9-BDA1-4494-8948-21C1122DD5E8}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>ENUtility</RootNamespace>
+    <ProjectName>ZZUtility</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL_MD|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL_MD|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL_MD|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL_MD|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug_DLL_MD|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL_MD|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release_DLL_MD|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL_MD|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL_MD|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)\bin\$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\$(Configuration)_$(Platform)\obj\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL_MD|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)$(Configuration)\$(Platform)\temp\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL_MD|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\bin\$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\$(Configuration)_$(Platform)\obj\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL_MD|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(SolutionDir)$(Configuration)\$(Platform)\temp\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL_MD|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;ZZUTILITY_EXPORTS;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..;$(Cpp3rdLibDir)\trunk\sqlcipher-3.1.0\include;$(Cpp3rdLibDir)\trunk\rapidjson-0.11\include;$(Cpp3rdLibDir)\trunk\openssl-1.0.1i\libs\vc12-threads-zlib.dynamic-x86-release-dll\include</AdditionalIncludeDirectories>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+    </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL_MD|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;ENUTILITY_EXPORTS;%(PreprocessorDefinitions);EN_STATIC_LIBRARY</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..;$(Cpp3rdLibDir)\trunk\rapidjson-0.11\include;$(Cpp3rdLibDir)\trunk\openssl-1.0.1i\libs\vc12-threads-zlib.dynamic-x64-release-lib\include;$(Cpp3rdLibDir)\trunk\sqlcipher-3.1.0\include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL_MD|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_WINDOWS;ZZUTILITY_EXPORTS;WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..;$(Cpp3rdLibDir)\trunk\sqlcipher-3.1.0\include;$(Cpp3rdLibDir)\trunk\rapidjson-0.11\include;$(Cpp3rdLibDir)\trunk\openssl-1.0.1i\libs\vc12-threads-zlib.dynamic-x86-release-dll\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL_MD|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;ENUTILITY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..;$(Cpp3rdLibDir)\trunk\rapidjson-0.11\include;$(Cpp3rdLibDir)\trunk\openssl-1.0.1i\libs\vc12-threads-zlib.dynamic-x64-release-lib\include;$(Cpp3rdLibDir)\trunk\sqlcipher-3.1.0\include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AppData\GeneralAppData.cpp" />
+    <ClCompile Include="BufferTools\Buffer.cpp" />
+    <ClCompile Include="BufferTools\BinaryReader.cpp" />
+    <ClCompile Include="BufferTools\BinaryWriter.cpp" />
+    <ClCompile Include="BufferTools\StreamReader.cpp" />
+    <ClCompile Include="BufferTools\StreamWriter.cpp" />
+    <ClCompile Include="ConcurrencyModel\ZZThreadPool.cpp" />
+    <ClCompile Include="ConcurrencyModel\ZZThreadPoolWork.cpp" />
+    <ClCompile Include="ConcurrencyModel\IoCompletionHandlerAbstract.cpp" />
+    <ClCompile Include="ConcurrencyModel\IoCompletionPortModel.cpp" />
+    <ClCompile Include="CrashDump\CrashDump.cpp" />
+    <ClCompile Include="LinkLibs.cpp" />
+    <ClCompile Include="Process\AppProcess.cpp" />
+    <ClCompile Include="Process\SingleProcessGuard.cpp" />
+    <ClCompile Include="StringEncode\Base64.cpp" />
+    <ClCompile Include="StringEncode\DataSize.cpp" />
+    <ClCompile Include="StringEncode\StringEncode.cpp" />
+    <ClCompile Include="Synchronization\CriticalSectionSync.cpp" />
+    <ClCompile Include="Synchronization\EventSync.cpp" />
+    <ClCompile Include="Synchronization\MutexSync.cpp" />
+    <ClCompile Include="Synchronization\SemaphoreSync.cpp" />
+    <ClCompile Include="System\SystemInfo.cpp" />
+    <ClCompile Include="WinMessage\WinMsgDispatcher.cpp" />
+    <ClCompile Include="WinMessage\WinMsgServer.cpp" />
+    <ClCompile Include="WinMessage\WinMsgTarget.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AppData\GeneralAppData.h" />
+    <ClInclude Include="BufferTools\Buffer.h" />
+    <ClInclude Include="BufferTools\BinaryReader.h" />
+    <ClInclude Include="BufferTools\BinaryWriter.h" />
+    <ClInclude Include="BufferTools\StreamReader.h" />
+    <ClInclude Include="BufferTools\StreamWriter.h" />
+    <ClInclude Include="ConcurrencyModel\ZZThreadPool.h" />
+    <ClInclude Include="ConcurrencyModel\ZZThreadPoolWork.h" />
+    <ClInclude Include="ConcurrencyModel\IoCompletionHandlerAbstract.h" />
+    <ClInclude Include="ConcurrencyModel\IoCompletionPortModel.h" />
+    <ClInclude Include="ConcurrencyModel\IoCompletionPortPrivateTypes.h" />
+    <ClInclude Include="CrashDump\CrashDump.h" />
+    <ClInclude Include="DLLDefines.h" />
+    <ClInclude Include="Macro\ZZMacro.h" />
+    <ClInclude Include="Process\AppProcess.h" />
+    <ClInclude Include="Process\SingleProcessGuard.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="StringEncode\Base64.h" />
+    <ClInclude Include="StringEncode\DataSize.h" />
+    <ClInclude Include="StringEncode\StringEncode.h" />
+    <ClInclude Include="Synchronization\CriticalSectionSync.h" />
+    <ClInclude Include="Synchronization\EventSync.h" />
+    <ClInclude Include="Synchronization\MutexSync.h" />
+    <ClInclude Include="Synchronization\SemaphoreSync.h" />
+    <ClInclude Include="System\SystemInfo.h" />
+    <ClInclude Include="WinMessage\WinMsgDispatcher.h" />
+    <ClInclude Include="WinMessage\WinMsgPrivateTypes.h" />
+    <ClInclude Include="WinMessage\WinMsgServer.h" />
+    <ClInclude Include="WinMessage\WinMsgTarget.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ZZUtility.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

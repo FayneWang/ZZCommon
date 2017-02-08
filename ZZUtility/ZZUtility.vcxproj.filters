@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Synchronization">
+      <UniqueIdentifier>{4d4be0cf-24fa-4a0d-bda3-5a91cccf6c8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\BufferTools">
+      <UniqueIdentifier>{f2c7dabf-e9f8-4b8a-b05b-3a6b67a97bdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ConcurrencyModel">
+      <UniqueIdentifier>{3dd8e928-dcb7-43cb-bc5c-b29acbebce00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\StringEncode">
+      <UniqueIdentifier>{499db49a-2141-4ce8-a005-9fe08426ef66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AppData">
+      <UniqueIdentifier>{d0a9c19b-4cf8-4214-8ecc-a6b83afae96d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\System">
+      <UniqueIdentifier>{819550ff-35fa-4c22-95d6-5bd5ab56b7e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Process">
+      <UniqueIdentifier>{ec931b37-9461-4ef3-a215-7352c5c7c60c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CrashDump">
+      <UniqueIdentifier>{d920e305-37d8-4798-bef8-678b04763009}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Macro">
+      <UniqueIdentifier>{8f2202b6-1fb3-4cbf-bd19-05661cec965c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\WinMessage">
+      <UniqueIdentifier>{ea2271f0-4ea5-4d1d-93d6-0bcb8e5458b4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Synchronization\CriticalSectionSync.h">
+      <Filter>Source Files\Synchronization</Filter>
+    </ClInclude>
+    <ClInclude Include="Synchronization\EventSync.h">
+      <Filter>Source Files\Synchronization</Filter>
+    </ClInclude>
+    <ClInclude Include="Synchronization\MutexSync.h">
+      <Filter>Source Files\Synchronization</Filter>
+    </ClInclude>
+    <ClInclude Include="Synchronization\SemaphoreSync.h">
+      <Filter>Source Files\Synchronization</Filter>
+    </ClInclude>
+    <ClInclude Include="ConcurrencyModel\IoCompletionHandlerAbstract.h">
+      <Filter>Source Files\ConcurrencyModel</Filter>
+    </ClInclude>
+    <ClInclude Include="ConcurrencyModel\IoCompletionPortModel.h">
+      <Filter>Source Files\ConcurrencyModel</Filter>
+    </ClInclude>
+    <ClInclude Include="StringEncode\StringEncode.h">
+      <Filter>Source Files\StringEncode</Filter>
+    </ClInclude>
+    <ClInclude Include="StringEncode\DataSize.h">
+      <Filter>Source Files\StringEncode</Filter>
+    </ClInclude>
+    <ClInclude Include="System\SystemInfo.h">
+      <Filter>Source Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="StringEncode\Base64.h">
+      <Filter>Source Files\StringEncode</Filter>
+    </ClInclude>
+    <ClInclude Include="Process\SingleProcessGuard.h">
+      <Filter>Source Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="AppData\GeneralAppData.h">
+      <Filter>Source Files\AppData</Filter>
+    </ClInclude>
+    <ClInclude Include="ConcurrencyModel\IoCompletionPortPrivateTypes.h">
+      <Filter>Source Files\ConcurrencyModel</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferTools\Buffer.h">
+      <Filter>Source Files\BufferTools</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferTools\BinaryReader.h">
+      <Filter>Source Files\BufferTools</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferTools\BinaryWriter.h">
+      <Filter>Source Files\BufferTools</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferTools\StreamWriter.h">
+      <Filter>Source Files\BufferTools</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferTools\StreamReader.h">
+      <Filter>Source Files\BufferTools</Filter>
+    </ClInclude>
+    <ClInclude Include="CrashDump\CrashDump.h">
+      <Filter>Source Files\CrashDump</Filter>
+    </ClInclude>
+    <ClInclude Include="Macro\ZZMacro.h">
+      <Filter>Source Files\Macro</Filter>
+    </ClInclude>
+    <ClInclude Include="ConcurrencyModel\ZZThreadPool.h">
+      <Filter>Source Files\ConcurrencyModel</Filter>
+    </ClInclude>
+    <ClInclude Include="ConcurrencyModel\ZZThreadPoolWork.h">
+      <Filter>Source Files\ConcurrencyModel</Filter>
+    </ClInclude>
+    <ClInclude Include="WinMessage\WinMsgDispatcher.h">
+      <Filter>Source Files\WinMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="WinMessage\WinMsgPrivateTypes.h">
+      <Filter>Source Files\WinMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="WinMessage\WinMsgServer.h">
+      <Filter>Source Files\WinMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="WinMessage\WinMsgTarget.h">
+      <Filter>Source Files\WinMessage</Filter>
+    </ClInclude>
+    <ClInclude Include="Process\AppProcess.h">
+      <Filter>Source Files\Process</Filter>
+    </ClInclude>
+    <ClInclude Include="DLLDefines.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Synchronization\CriticalSectionSync.cpp">
+      <Filter>Source Files\Synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="Synchronization\EventSync.cpp">
+      <Filter>Source Files\Synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="Synchronization\MutexSync.cpp">
+      <Filter>Source Files\Synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="Synchronization\SemaphoreSync.cpp">
+      <Filter>Source Files\Synchronization</Filter>
+    </ClCompile>
+    <ClCompile Include="ConcurrencyModel\IoCompletionHandlerAbstract.cpp">
+      <Filter>Source Files\ConcurrencyModel</Filter>
+    </ClCompile>
+    <ClCompile Include="ConcurrencyModel\IoCompletionPortModel.cpp">
+      <Filter>Source Files\ConcurrencyModel</Filter>
+    </ClCompile>
+    <ClCompile Include="StringEncode\StringEncode.cpp">
+      <Filter>Source Files\StringEncode</Filter>
+    </ClCompile>
+    <ClCompile Include="StringEncode\DataSize.cpp">
+      <Filter>Source Files\StringEncode</Filter>
+    </ClCompile>
+    <ClCompile Include="System\SystemInfo.cpp">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="StringEncode\Base64.cpp">
+      <Filter>Source Files\StringEncode</Filter>
+    </ClCompile>
+    <ClCompile Include="Process\SingleProcessGuard.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="AppData\GeneralAppData.cpp">
+      <Filter>Source Files\AppData</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferTools\Buffer.cpp">
+      <Filter>Source Files\BufferTools</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferTools\BinaryReader.cpp">
+      <Filter>Source Files\BufferTools</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferTools\BinaryWriter.cpp">
+      <Filter>Source Files\BufferTools</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferTools\StreamWriter.cpp">
+      <Filter>Source Files\BufferTools</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferTools\StreamReader.cpp">
+      <Filter>Source Files\BufferTools</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashDump\CrashDump.cpp">
+      <Filter>Source Files\CrashDump</Filter>
+    </ClCompile>
+    <ClCompile Include="LinkLibs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConcurrencyModel\ZZThreadPool.cpp">
+      <Filter>Source Files\ConcurrencyModel</Filter>
+    </ClCompile>
+    <ClCompile Include="ConcurrencyModel\ZZThreadPoolWork.cpp">
+      <Filter>Source Files\ConcurrencyModel</Filter>
+    </ClCompile>
+    <ClCompile Include="WinMessage\WinMsgDispatcher.cpp">
+      <Filter>Source Files\WinMessage</Filter>
+    </ClCompile>
+    <ClCompile Include="WinMessage\WinMsgServer.cpp">
+      <Filter>Source Files\WinMessage</Filter>
+    </ClCompile>
+    <ClCompile Include="WinMessage\WinMsgTarget.cpp">
+      <Filter>Source Files\WinMessage</Filter>
+    </ClCompile>
+    <ClCompile Include="Process\AppProcess.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ZZUtility.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
