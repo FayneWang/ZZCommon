@@ -43,6 +43,9 @@
     <Filter Include="Source Files\WinMessage">
       <UniqueIdentifier>{ea2271f0-4ea5-4d1d-93d6-0bcb8e5458b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ConcurrencyModel\IOCPHandler">
+      <UniqueIdentifier>{cb2672f0-a133-4373-83eb-fb3de17b38f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Synchronization\CriticalSectionSync.h">
@@ -132,6 +135,9 @@
     <ClInclude Include="resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="ConcurrencyModel\IOCPHandler\TcpIOCPHandler.h">
+      <Filter>Source Files\ConcurrencyModel\IOCPHandler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Synchronization\CriticalSectionSync.cpp">
@@ -208,6 +214,9 @@
     </ClCompile>
     <ClCompile Include="Process\AppProcess.cpp">
       <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="ConcurrencyModel\IOCPHandler\TcpIOCPHandler.cpp">
+      <Filter>Source Files\ConcurrencyModel\IOCPHandler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

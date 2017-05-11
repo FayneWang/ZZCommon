@@ -146,6 +146,11 @@ protected: // virtual function
     void WaitDetachIocpModel();
 
 private:
+	/**
+	 * ½ûÖ¹¸´ÖÆÊµÀý¡£
+	 */
+	CIoCompletionHandlerAbstract(CIoCompletionHandlerAbstract &){}
+
     BOOL _IsAutoDelete();
     void _AttachIocpModel();
     void _DetachIocpModel();

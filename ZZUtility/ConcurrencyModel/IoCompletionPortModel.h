@@ -2,7 +2,7 @@
 
 /**
  * @file
- * @author wangzezhou <wangzezhou@163.com>
+ * @author wangzezhou <83209400@qq.com>
  * @date 2015-05-19
  *
  * @brief Windows完成端口模型的封装类，与@see ｛CIoCompletionHandlerAbstract｝类
@@ -15,15 +15,15 @@
 #include <ZZUtility/DLLDefines.h>
 
 /**
- * @class CIoCompletionPortModel
- *
- * @breif 完成端口并发模型封装类，使用该类可以避免搭建完成端口模型的繁琐处理。
- *
- * 这个类实现了Windows完成端模型的封装，与@see ｛CIoCompletionHandlerAbstract｝派生
- * 类一起使用。这是一个单例类，提供了搭建完成端口时，所需要处理步聚，成控制完成端口时
- * 需要使用的接口封装。在@see ｛CIoCompletionHandlerAbstract｝类中定义了稳定、建壮
- * 的处理逻辑接口。
- */
+* @class CIoCompletionPortModel
+*
+* @breif Windows IO Completion Model(完成端口)模型封装类，该类是一个单例实现。
+*
+* 该类完全线程安全，类实例与@see ｛CIoCompletionHandlerAbstract｝派生类一起协作使用。
+* 内部的最大、最小并发线程数的创建和销毁是根据关联的@see ｛CIoCompletionHandlerAbstract｝实例数量或
+* CPU的内核数量进行自动控制。
+*
+*/
 class CIoCompletionHandlerAbstract;
 class CIoCompletionPortModelPrivate;
 class _ZZUTILITY_EXTERN_ CIoCompletionPortModel

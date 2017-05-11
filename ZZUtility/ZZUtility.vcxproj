@@ -183,6 +183,7 @@
     <ClCompile Include="BufferTools\BinaryWriter.cpp" />
     <ClCompile Include="BufferTools\StreamReader.cpp" />
     <ClCompile Include="BufferTools\StreamWriter.cpp" />
+    <ClCompile Include="ConcurrencyModel\IOCPHandler\TcpIOCPHandler.cpp" />
     <ClCompile Include="ConcurrencyModel\ZZThreadPool.cpp" />
     <ClCompile Include="ConcurrencyModel\ZZThreadPoolWork.cpp" />
     <ClCompile Include="ConcurrencyModel\IoCompletionHandlerAbstract.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="BufferTools\BinaryWriter.h" />
     <ClInclude Include="BufferTools\StreamReader.h" />
     <ClInclude Include="BufferTools\StreamWriter.h" />
+    <ClInclude Include="ConcurrencyModel\IOCPHandler\TcpIOCPHandler.h" />
     <ClInclude Include="ConcurrencyModel\ZZThreadPool.h" />
     <ClInclude Include="ConcurrencyModel\ZZThreadPoolWork.h" />
     <ClInclude Include="ConcurrencyModel\IoCompletionHandlerAbstract.h" />
