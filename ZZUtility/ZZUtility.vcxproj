@@ -108,6 +108,10 @@
       </AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+      <ImportLibrary>$(SolutionDir)\bin\Debug_$(Platform)\$(TargetName).lib</ImportLibrary>
+      <OutputFile>$(SolutionDir)\bin\Debug_$(Platform)\$(TargetName)$(TargetExt)</OutputFile>
+      <ProfileGuidedDatabase>$(SolutionDir)\bin\Debug_$(Platform)\$(TargetName).pgd</ProfileGuidedDatabase>
+      <ProgramDatabaseFile>$(SolutionDir)\bin\Debug_$(Platform)\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -152,6 +156,10 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+      <ImportLibrary>$(SolutionDir)\bin\Release_$(Platform)\$(TargetName).lib</ImportLibrary>
+      <OutputFile>$(SolutionDir)\bin\Release_$(Platform)\$(TargetName)$(TargetExt)</OutputFile>
+      <ProfileGuidedDatabase>$(SolutionDir)\bin\Release_$(Platform)\$(TargetName).pgd</ProfileGuidedDatabase>
+      <ProgramDatabaseFile>$(SolutionDir)\bin\Release_$(Platform)\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL_MD|x64'">
@@ -183,7 +191,8 @@
     <ClCompile Include="BufferTools\BinaryWriter.cpp" />
     <ClCompile Include="BufferTools\StreamReader.cpp" />
     <ClCompile Include="BufferTools\StreamWriter.cpp" />
-    <ClCompile Include="ConcurrencyModel\IOCPHandler\TcpIOCPHandler.cpp" />
+    <ClCompile Include="ConcurrencyModel\TcpIOCP\TcpListenerHandler.cpp" />
+    <ClCompile Include="ConcurrencyModel\TcpIOCP\TcpSessionHandler.cpp" />
     <ClCompile Include="ConcurrencyModel\ZZThreadPool.cpp" />
     <ClCompile Include="ConcurrencyModel\ZZThreadPoolWork.cpp" />
     <ClCompile Include="ConcurrencyModel\IoCompletionHandlerAbstract.cpp" />
@@ -211,7 +220,9 @@
     <ClInclude Include="BufferTools\BinaryWriter.h" />
     <ClInclude Include="BufferTools\StreamReader.h" />
     <ClInclude Include="BufferTools\StreamWriter.h" />
-    <ClInclude Include="ConcurrencyModel\IOCPHandler\TcpIOCPHandler.h" />
+    <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpHandlerPrivateTypes.h" />
+    <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpListenerHandler.h" />
+    <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpSessionHandler.h" />
     <ClInclude Include="ConcurrencyModel\ZZThreadPool.h" />
     <ClInclude Include="ConcurrencyModel\ZZThreadPoolWork.h" />
     <ClInclude Include="ConcurrencyModel\IoCompletionHandlerAbstract.h" />

@@ -4,8 +4,7 @@
 
 
 CIoCompletionHandlerAbstract::CIoCompletionHandlerAbstract(void) : m(new CIoCompletionHandlerAbstractPrivate),
-    m_hHandle(INVALID_HANDLE_VALUE),
-    m_iIoCompletionStatus(ICS_OVERLAP_HANDLE)
+    m_hHandle(INVALID_HANDLE_VALUE)
 {
     memset(&m->overlap,0x00,sizeof(m->overlap));
     m->esModelTie.Create(NULL,TRUE,TRUE);
@@ -29,21 +28,21 @@ OVERLAPPED * CIoCompletionHandlerAbstract::IocpAsyncOverlap()
 
 void CIoCompletionHandlerAbstract::Destroy()
 {
-	m->csMultiThread.Enter();
+	m->csCriticalLock.Enter();
 	if (m_hHandle != nullptr)
 	{
 		CloseHandle(m_hHandle);
 		m_hHandle = NULL;
 	}
-	m->csMultiThread.Leave();
+	m->csCriticalLock.Leave();
 }
 
 BOOL CIoCompletionHandlerAbstract::IsDestroyed()
 {
 	bool bDestroyed;
-	m->csMultiThread.Enter();
+	m->csCriticalLock.Enter();
 	bDestroyed = m_hHandle == nullptr || m_hHandle == INVALID_HANDLE_VALUE;
-	m->csMultiThread.Leave();
+	m->csCriticalLock.Leave();
 
     return bDestroyed;
 }
@@ -70,10 +69,10 @@ void CIoCompletionHandlerAbstract::_DetachIocpModel()
 
 void CIoCompletionHandlerAbstract::EnterThread()
 {
-	m->csMultiThread.Enter();
+	m->csCriticalLock.Enter();
 }
 
 void CIoCompletionHandlerAbstract::LeaveThread()
 {
-	m->csMultiThread.Leave();
+	m->csCriticalLock.Leave();
 }

@@ -28,6 +28,8 @@ public:
     CBuffer(int32_t iSize = BUFER_DEFAULT_SIZE,bool bInitBuffer = false);
     ~CBuffer(void);		
 
+	bool InitBuffer();
+
     /**
      * 获取内存获冲区的地址
      * @return 返回内存获取冲的起始地址。如果内存缓冲区对象初始化失败时，该函数返回 NULL 。
@@ -58,6 +60,5 @@ protected:
 	int32_t			m_iSize;
 
 private:
-	bool InitBuffer();
 };
 

@@ -74,7 +74,7 @@ public:
     static void Uninstance();
 
 private:
-    struct THREAD_DATA
+    struct ThreadData
     {
         CIoCompletionPortModel *pIocpModel;
         HANDLE                  hThread;

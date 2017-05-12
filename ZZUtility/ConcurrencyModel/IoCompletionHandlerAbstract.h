@@ -10,26 +10,26 @@
 #include <wtypes.h>
 #include <ZZUtility/DLLDefines.h>
 
-/**
- * @enum IoCompletionHandlerStatus
- *
- * @brief 完成端口信号处理类（CIoCompletionHandlerAbstract）对象当前的工作状态。
- *
- * 处理类对象与完成端口模型封装类CIoCompletionPortModel成功关联后的状态定义，这个状
- * 态决定处理类对象在接收到信号时下一步处理工作的方式。
- */
-enum IoCompletionHandlerStatus
-{
-    ICS_OVERLAP_HANDLE,	/** @brief
-						 * 表示已关联的处理类对象当前的操作状态应该进行OVERLAPPED
-						 * 操作，即调用OverlapForIoOperation()的实现定义。
-						 */
-
-    ICS_LAST,			/** @brief
-						 * CIoCompletionHandlerAbstract 派生类增加工作状态定义时的
-						 * 第一定状态枚举值，必须从这个值开始定义。
-						 */
-};
+// /**
+//  * @enum IoCompletionHandlerStatus
+//  *
+//  * @brief 完成端口信号处理类（CIoCompletionHandlerAbstract）对象当前的工作状态。
+//  *
+//  * 处理类对象与完成端口模型封装类CIoCompletionPortModel成功关联后的状态定义，这个状
+//  * 态决定处理类对象在接收到信号时下一步处理工作的方式。
+//  */
+// enum IoCompletionHandlerStatus
+// {
+//     ICS_OVERLAP_HANDLE,	/** @brief
+// 						 * 表示已关联的处理类对象当前的操作状态应该进行OVERLAPPED
+// 						 * 操作，即调用OverlapForIoOperation()的实现定义。
+// 						 */
+// 
+//     ICS_LAST,			/** @brief
+// 						 * CIoCompletionHandlerAbstract 派生类增加工作状态定义时的
+// 						 * 第一定状态枚举值，必须从这个值开始定义。
+// 						 */
+// };
 
 /**
  * @class CIoCompletionHandlerAbstract
@@ -76,19 +76,11 @@ protected:  // protected member.
 		SOCKET	m_socket;	///<	network socket 
 	};			
 
-	/// 用来标记当前对象的工作状态的对象, @see {IoCompletionHandlerStatus}。
-    int             m_iIoCompletionStatus; 
+// 	/// 用来标记当前对象的工作状态的对象, @see {IoCompletionHandlerStatus}。
+//     int             m_iIoCompletionStatus; 
 
 
 protected: // virtual function
-
-    /**
-	 * 实现创建CIoCompletionHandlerAbstract::m_hHandle的封装，创建成功时返回TRUE,否则返回FALSE。
-	 * 
-	 * 该函数在传入CIoCompletionPortModel::Attach时被CIoCompletionPortModel对象调用。
-	 *
-     */
-    virtual BOOL Create() = 0;
     
     /**
 	 * 类对象在销毁时会被调用的成员函数。
@@ -102,7 +94,7 @@ protected: // virtual function
     /**
      * 主要处理成员变量m_hHandle使用的资源与完成端口句柄进行重叠的内容。
      */
-    virtual BOOL OverlapForIoOperation() = 0;
+    virtual BOOL OverlapForIOCompletion() = 0;
 
 	/**
 	 * 当类的CIoCompletionHandlerAbstract::m_iIoCompletionStatus正常工作且
@@ -152,8 +144,8 @@ private:
 	CIoCompletionHandlerAbstract(CIoCompletionHandlerAbstract &){}
 
     BOOL _IsAutoDelete();
-    void _AttachIocpModel();
-    void _DetachIocpModel();
+    void _AttachIocpModel(); // 用于多线程安全退出
+    void _DetachIocpModel(); // 用于多线程安全退出
 
     CIoCompletionHandlerAbstractPrivate *m;
 };

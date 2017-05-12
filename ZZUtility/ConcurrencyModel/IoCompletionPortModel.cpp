@@ -6,7 +6,6 @@
 #include "IoCompletionPortModel.h"
 #include "IoCompletionPortPrivateTypes.h"
 
-#define ICPM_MIN_IOCP_THREAD 1
 
 // 并发控制处理线程
 DWORD WINAPI IocpConcurrentProc(LPVOID lpParameter);
@@ -37,25 +36,18 @@ CIoCompletionPortModel::~CIoCompletionPortModel(void)
 
 BOOL CIoCompletionPortModel::AttachHandler(CIoCompletionHandlerAbstract *pHandler)
 {
+	if (pHandler == NULL || 
+		pHandler->m_hHandle == NULL || 
+		pHandler->m_hHandle == INVALID_HANDLE_VALUE)
+	{
+		return FALSE;
+	}
+
     m->attchedSetAndThreadSync.Enter();
     if (m->setIocpAttchedObj.find(pHandler) != m->setIocpAttchedObj.end())
     {
         m->attchedSetAndThreadSync.Leave();
         return TRUE;
-    }
-
-    if(!pHandler->Create())
-    {
-        m->attchedSetAndThreadSync.Leave();
-        return FALSE;
-    }
-
-    if (pHandler->m_hHandle == NULL ||
-        pHandler->m_hHandle == INVALID_HANDLE_VALUE)
-    {
-        pHandler->Destroy();
-        m->attchedSetAndThreadSync.Leave();
-        return FALSE;
     }
     
 	HANDLE hIocp = CreateIoCompletionPort(pHandler->m_hHandle, m->hIocp, 
@@ -67,20 +59,22 @@ BOOL CIoCompletionPortModel::AttachHandler(CIoCompletionHandlerAbstract *pHandle
        return FALSE;
    }
 
-   m->hIocp = hIocp;
-   pHandler->m_iIoCompletionStatus = ICS_OVERLAP_HANDLE;
-   if (!PostHandlerStatus(pHandler))
+   pHandler->_AttachIocpModel();
+   if (!pHandler->OverlapForIOCompletion())
    {
-       pHandler->Destroy();
-       m->attchedSetAndThreadSync.Leave();
-
-       return FALSE;
+	   pHandler->Destroy();
+	   m->attchedSetAndThreadSync.Leave();
+	   return FALSE;
+   }
+   else
+   {
+	   _InterlockedIncrement(&pHandler->m->lOverlappedCount);
    }
 
-   pHandler->_AttachIocpModel();
+   m->hIocp = hIocp;
    if (m->vtrThreadHandle.capacity() > m->vtrThreadHandle.size())
    {
-       THREAD_DATA *pThreadData = new THREAD_DATA;
+       ThreadData *pThreadData = new ThreadData;
        pThreadData->pIocpModel = this;
        pThreadData->hThread = CreateThread(NULL,0,IocpConcurrentProc,pThreadData,0,NULL);
        if (NULL != pThreadData->hThread)
@@ -105,6 +99,7 @@ BOOL CIoCompletionPortModel::AttachHandler(CIoCompletionHandlerAbstract *pHandle
 
    m->setIocpAttchedObj.insert(pHandler);
    m->attchedSetAndThreadSync.Leave();
+
 
    return TRUE;
 }
@@ -134,18 +129,18 @@ void CIoCompletionPortModel::DetachHandler(CIoCompletionHandlerAbstract *pHandle
 BOOL CIoCompletionPortModel::PostHandlerStatus(CIoCompletionHandlerAbstract *pHandler)
 {
 	_InterlockedIncrement(&pHandler->m->lOverlappedCount);
-    return ::PostQueuedCompletionStatus(m->hIocp,sizeof(pHandler),reinterpret_cast<ULONG_PTR>(pHandler),pHandler->IocpAsyncOverlap());
+    return ::PostQueuedCompletionStatus(m->hIocp,0,reinterpret_cast<ULONG_PTR>(pHandler),NULL);
 }
 
 BOOL CIoCompletionPortModel::_IsExitProcessThread(CIoCompletionHandlerAbstract *pCompletionHandler)
 {
-	if (_InterlockedDecrement(&pCompletionHandler->m->lOverlappedCount) == 0)
+	if (pCompletionHandler->m->lOverlappedCount == 0)
 	{
 		pCompletionHandler->Destroy();
 
 		m->attchedSetAndThreadSync.Enter();
 		m->setIocpAttchedObj.erase(pCompletionHandler);
-		BOOL bExit = m->setIocpAttchedObj.size() < m->vtrThreadHandle.size();
+		BOOL bExit = m->setIocpAttchedObj.size() < m->vtrThreadHandle.size(); // 关联对象数量小于线程数时退出线程
 		m->attchedSetAndThreadSync.Leave();
 
 		if (pCompletionHandler->_IsAutoDelete())
@@ -181,22 +176,32 @@ void CIoCompletionPortModel::_IocpProc()
 			}
 
 			CIoCompletionHandlerAbstract *pIocpHandler = reinterpret_cast<CIoCompletionHandlerAbstract *>(lCompletionKey);
-			switch (pIocpHandler->m_iIoCompletionStatus)
+			if (pIocpHandler->DataTransferTrigger(dwNumOfTransferredBytes))
 			{
-			case ICS_OVERLAP_HANDLE:
-				pIocpHandler->m_iIoCompletionStatus = ICS_LAST;
-				if(pIocpHandler->OverlapForIoOperation())
-				{
-					_InterlockedIncrement(&pIocpHandler->m->lOverlappedCount);
-				}
-				break;
-			default:
-				if(pIocpHandler->DataTransferTrigger(dwNumOfTransferredBytes))
-				{
-					_InterlockedIncrement(&pIocpHandler->m->lOverlappedCount);
-				}
-				break;
+				pIocpHandler->OverlapForIOCompletion();
+				// _InterlockedIncrement(&pIocpHandler->m->lOverlappedCount);
 			}
+			else
+			{
+				_InterlockedDecrement(&pIocpHandler->m->lOverlappedCount);
+			}
+
+// 			switch (pIocpHandler->m_iIoCompletionStatus)
+// 			{
+// 			case ICS_OVERLAP_HANDLE:
+// 				pIocpHandler->m_iIoCompletionStatus = ICS_LAST;
+// 				if(pIocpHandler->OverlapForIOCompletion())
+// 				{
+// 					_InterlockedIncrement(&pIocpHandler->m->lOverlappedCount);
+// 				}
+// 				break;
+// 			default:
+// 				if (pIocpHandler->DataTransferTrigger(dwNumOfTransferredBytes))
+// 				{
+// 					_InterlockedIncrement(&pIocpHandler->m->lOverlappedCount);
+// 				}
+// 				break;
+// 			}
 
 			if (_IsExitProcessThread(pIocpHandler))
 			{
@@ -205,20 +210,18 @@ void CIoCompletionPortModel::_IocpProc()
 		}
 		else
 		{
-			if (lpOverlapped != NULL)
+			if (lCompletionKey != NULL)
 			{
 				// 已重叠的句柄在直接关闭或者通讯另一端关闭退出时，会到达这一步骤。
 				CIoCompletionHandlerAbstract *pIocpHandler = 
 					reinterpret_cast<CIoCompletionHandlerAbstract*>(lCompletionKey);
-				if(!pIocpHandler->HandleRaiseError(GetLastError()))
-				{
-					// 未正常掌握线程时，向下进行处理。
-					if (_IsExitProcessThread(pIocpHandler))
-					{
-						break;  // exit loop of do{...}while(lCompletionKey != NULL).
-					}
-				}
+				_InterlockedDecrement(&pIocpHandler->m->lOverlappedCount);
+				pIocpHandler->HandleRaiseError(GetLastError());
 
+				if (_IsExitProcessThread(pIocpHandler))
+				{
+					break;  // exit loop of do{...}while(lCompletionKey != NULL).
+				}
 			}
 			else
 			{
@@ -271,6 +274,7 @@ void CIoCompletionPortModel::_ThreadHanleProc(HANDLE hThread)
 	{
 		if(hThread == *itrBegin)
 		{
+			HANDLE hThread = GetCurrentThread();
 			m->vtrThreadHandle.erase(itrBegin);
 			CloseHandle(hThread);
 			break; // exit for;
@@ -281,8 +285,8 @@ void CIoCompletionPortModel::_ThreadHanleProc(HANDLE hThread)
 
 DWORD WINAPI IocpConcurrentProc(LPVOID lpParameter)
 {
-	CIoCompletionPortModel::THREAD_DATA *pThreadData = 
-		static_cast<CIoCompletionPortModel::THREAD_DATA*>(lpParameter);
+	CIoCompletionPortModel::ThreadData *pThreadData = 
+		static_cast<CIoCompletionPortModel::ThreadData*>(lpParameter);
 
 	pThreadData->pIocpModel->_ThreadHanleProc(pThreadData->hThread);
 
