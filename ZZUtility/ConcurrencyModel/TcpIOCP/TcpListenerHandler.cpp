@@ -3,7 +3,7 @@
 #include <mswsock.h>
 #include "../IoCompletionPortModel.h"
 #include "TcpHandlerPrivateTypes.h"
-#include "TcpSessionHandler.h"
+#include "TcpSessionServerHandler.h"
 #include "TcpListenerHandler.h"
 
 
@@ -63,17 +63,27 @@ CTcpListenerHandler * CTcpListenerHandler::CreateAndAttachToIocp(USHORT sPort)
 
 BOOL CTcpListenerHandler::OverlapForIOCompletion()
 {
-	if (m->pCurrentAcceptSession == NULL)
-		m->pCurrentAcceptSession = new CTcpSessionHandler();
+	if (m->pAcceptSession == NULL)
+		m->pAcceptSession = new CTcpSessionServerHandler();
 
-	if (m->pCurrentAcceptSession->Create(m_socket,4096))
+	if (!m->pAcceptSession->Create(m_socket, 4096))
+		goto error_exit;
+
+	CTcpSessionServerHandlerPrivate *&pSessionMembers = m->pAcceptSession->m;
+	if (!m->fnAccepteEx(m_socket, m->pAcceptSession->m_socket, pSessionMembers->wsabuf.buf,
+		pSessionMembers->wsabuf.len - (sizeof(struct sockaddr_in) + 16) * 2,
+		sizeof(struct sockaddr_in) + 16, sizeof(struct sockaddr_in) + 16, // +16 详见 AcceptEx 函数参数 dwLocalAddressLength 和 dwRemoteAddressLength 
+		NULL, IocpAsyncOverlap()))
 	{
-		return TRUE;
+		if (GetLastError() == ERROR_IO_PENDING)
+			return TRUE;
 	}
 
+error_exit:
+
 	// TODO: handle error,and then restore work.
-	delete m->pCurrentAcceptSession;
-	m->pCurrentAcceptSession = NULL;
+	delete m->pAcceptSession;
+	m->pAcceptSession = NULL;
 	return FALSE;
 }
 
@@ -81,9 +91,9 @@ BOOL CTcpListenerHandler::DataTransferTrigger(DWORD dwNumOfTransportBytes)
 {
 	if (dwNumOfTransportBytes != 0)
 	{
-		m->pCurrentAcceptSession->DataTransferTrigger(dwNumOfTransportBytes);
-		CIoCompletionPortModel::Instance()->AttachHandler(m->pCurrentAcceptSession);
-		m->pCurrentAcceptSession = NULL;
+		m->pAcceptSession->DataTransferTrigger(dwNumOfTransportBytes);
+		CIoCompletionPortModel::Instance()->AttachHandler(m->pAcceptSession);
+		m->pAcceptSession = NULL;
 	}
 
 	return TRUE;

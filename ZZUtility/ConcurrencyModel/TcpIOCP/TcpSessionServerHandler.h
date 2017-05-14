@@ -3,17 +3,21 @@
 #include <stdint.h>
 #include <ZZUtility/ConcurrencyModel/IoCompletionHandlerAbstract.h>
 
-class CTcpSessionHandlerPrivate;
-class CTcpSessionHandler : public CIoCompletionHandlerAbstract
+class CTcpSessionServerHandlerPrivate;
+class CTcpSessionServerHandler : public CIoCompletionHandlerAbstract
 {
 private:
 	friend class CTcpListenerHandler;
 
 protected:
-	CTcpSessionHandler();
-	~CTcpSessionHandler();
+	CTcpSessionServerHandler();
+	~CTcpSessionServerHandler();
 	
-	virtual BOOL Create(SOCKET sListen,int iRecvBufferSize);
+	
+	BOOL Create(SOCKET sListen,int iRecvBufferSize) ;
+
+
+	virtual void Destroy() override;
 
 	virtual BOOL OverlapForIOCompletion() override;
 
@@ -24,6 +28,6 @@ protected:
 	virtual BOOL HandleRaiseError(DWORD dwErrorCode) override;
 
 private:
-	CTcpSessionHandlerPrivate *m;
+	CTcpSessionServerHandlerPrivate *m;
 };
 

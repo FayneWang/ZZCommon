@@ -26,22 +26,21 @@ OVERLAPPED * CIoCompletionHandlerAbstract::IocpAsyncOverlap()
     return &m->overlap;
 }
 
-void CIoCompletionHandlerAbstract::Destroy()
-{
-	m->csCriticalLock.Enter();
-	if (m_hHandle != nullptr)
-	{
-		CloseHandle(m_hHandle);
-		m_hHandle = NULL;
-	}
-	m->csCriticalLock.Leave();
-}
+// void CIoCompletionHandlerAbstract::Destroy()
+// {
+// 	m->csCriticalLock.Enter();
+// 	if (m_hHandle != nullptr)
+// 	{
+// 		CloseHandle(m_hHandle);
+// 		m_hHandle = NULL;
+// 	}
+// 	m->csCriticalLock.Leave();
+// }
 
 BOOL CIoCompletionHandlerAbstract::IsDestroyed()
 {
-	bool bDestroyed;
 	m->csCriticalLock.Enter();
-	bDestroyed = m_hHandle == nullptr || m_hHandle == INVALID_HANDLE_VALUE;
+	bool bDestroyed = m_hHandle == nullptr || m_hHandle == INVALID_HANDLE_VALUE;
 	m->csCriticalLock.Leave();
 
     return bDestroyed;

@@ -89,7 +89,7 @@ protected: // virtual function
 	 * 如果派生类销毁对象时，有其他要销毁其他资源，可以重定义这个函数，实现销毁处理。
 	 * 但记得必须在重定义的函数未尾再调用一次这个函数。
      */
-    virtual void Destroy();
+    virtual void Destroy() = 0;
 
     /**
      * 主要处理成员变量m_hHandle使用的资源与完成端口句柄进行重叠的内容。

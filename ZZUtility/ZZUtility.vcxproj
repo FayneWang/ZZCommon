@@ -192,7 +192,8 @@
     <ClCompile Include="BufferTools\StreamReader.cpp" />
     <ClCompile Include="BufferTools\StreamWriter.cpp" />
     <ClCompile Include="ConcurrencyModel\TcpIOCP\TcpListenerHandler.cpp" />
-    <ClCompile Include="ConcurrencyModel\TcpIOCP\TcpSessionHandler.cpp" />
+    <ClCompile Include="ConcurrencyModel\TcpIOCP\TcpSessionClientHandler.cpp" />
+    <ClCompile Include="ConcurrencyModel\TcpIOCP\TcpSessionServerHandler.cpp" />
     <ClCompile Include="ConcurrencyModel\ZZThreadPool.cpp" />
     <ClCompile Include="ConcurrencyModel\ZZThreadPoolWork.cpp" />
     <ClCompile Include="ConcurrencyModel\IoCompletionHandlerAbstract.cpp" />
@@ -222,7 +223,8 @@
     <ClInclude Include="BufferTools\StreamWriter.h" />
     <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpHandlerPrivateTypes.h" />
     <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpListenerHandler.h" />
-    <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpSessionHandler.h" />
+    <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpSessionClientHandler.h" />
+    <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpSessionServerHandler.h" />
     <ClInclude Include="ConcurrencyModel\ZZThreadPool.h" />
     <ClInclude Include="ConcurrencyModel\ZZThreadPoolWork.h" />
     <ClInclude Include="ConcurrencyModel\IoCompletionHandlerAbstract.h" />

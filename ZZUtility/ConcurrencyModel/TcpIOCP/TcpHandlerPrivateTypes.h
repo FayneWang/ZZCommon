@@ -5,10 +5,10 @@
 #include <Windows.h>
 
 class CBuffer;
-class CTcpSessionHandlerPrivate
+class CTcpSessionServerHandlerPrivate
 {
 	friend class CTcpListenerHandler;
-	friend class CTcpSessionHandler;
+	friend class CTcpSessionServerHandler;
 	WSABUF	wsabuf;
 	CBuffer *pBuffer;
 };
@@ -21,12 +21,12 @@ class CTcpListenerHandlerPrivate
  	LPFN_ACCEPTEX				fnAccepteEx;
  	LPFN_GETACCEPTEXSOCKADDRS	lpfnGetAcceptexSockAddrs;
 
-	CTcpSessionHandler *pCurrentAcceptSession;
+	CTcpSessionServerHandler *pAcceptSession;
 
 	CTcpListenerHandlerPrivate() :
 		uServicePort(0),
 		lpfnGetAcceptexSockAddrs(NULL),
 		fnAccepteEx(NULL),
-		pCurrentAcceptSession(NULL)
+		pAcceptSession(NULL)
 	{}
 };
