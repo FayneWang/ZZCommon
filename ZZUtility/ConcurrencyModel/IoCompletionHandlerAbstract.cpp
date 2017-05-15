@@ -26,34 +26,9 @@ OVERLAPPED * CIoCompletionHandlerAbstract::IocpAsyncOverlap()
     return &m->overlap;
 }
 
-// void CIoCompletionHandlerAbstract::Destroy()
-// {
-// 	m->csCriticalLock.Enter();
-// 	if (m_hHandle != nullptr)
-// 	{
-// 		CloseHandle(m_hHandle);
-// 		m_hHandle = NULL;
-// 	}
-// 	m->csCriticalLock.Leave();
-// }
-
-BOOL CIoCompletionHandlerAbstract::IsDestroyed()
-{
-	m->csCriticalLock.Enter();
-	bool bDestroyed = m_hHandle == nullptr || m_hHandle == INVALID_HANDLE_VALUE;
-	m->csCriticalLock.Leave();
-
-    return bDestroyed;
-}
-
 void CIoCompletionHandlerAbstract::WaitDetachIocpModel()
 {
     m->esModelTie.WaitSignal();
-}
-
-BOOL CIoCompletionHandlerAbstract::_IsAutoDelete()
-{
-    return m->bAutoDelete;
 }
 
 void CIoCompletionHandlerAbstract::_AttachIocpModel()
@@ -63,7 +38,16 @@ void CIoCompletionHandlerAbstract::_AttachIocpModel()
 
 void CIoCompletionHandlerAbstract::_DetachIocpModel()
 {
-   m->esModelTie.Signaled();
+	if (m->bAutoDelete)
+	{
+		m->esModelTie.Signaled();
+		delete this;
+	}
+	else
+	{
+		// 事件有信号标记必须放在其他成员函数的调用后面，避免 有信号 标记之后，执行了 delete 对象之后，再调用到对象的其他成员。
+		m->esModelTie.Signaled(); 
+	}
 }
 
 void CIoCompletionHandlerAbstract::EnterThread()

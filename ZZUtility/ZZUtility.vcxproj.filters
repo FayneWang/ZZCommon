@@ -141,10 +141,10 @@
     <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpListenerHandler.h">
       <Filter>Source Files\ConcurrencyModel\TcpIOCP</Filter>
     </ClInclude>
-    <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpSessionClientHandler.h">
+    <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpServerSessionHandler.h">
       <Filter>Source Files\ConcurrencyModel\TcpIOCP</Filter>
     </ClInclude>
-    <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpSessionServerHandler.h">
+    <ClInclude Include="ConcurrencyModel\TcpIOCP\TcpClientSessionHandler.h">
       <Filter>Source Files\ConcurrencyModel\TcpIOCP</Filter>
     </ClInclude>
   </ItemGroup>
@@ -227,10 +227,10 @@
     <ClCompile Include="ConcurrencyModel\TcpIOCP\TcpListenerHandler.cpp">
       <Filter>Source Files\ConcurrencyModel\TcpIOCP</Filter>
     </ClCompile>
-    <ClCompile Include="ConcurrencyModel\TcpIOCP\TcpSessionClientHandler.cpp">
+    <ClCompile Include="ConcurrencyModel\TcpIOCP\TcpServerSessionHandler.cpp">
       <Filter>Source Files\ConcurrencyModel\TcpIOCP</Filter>
     </ClCompile>
-    <ClCompile Include="ConcurrencyModel\TcpIOCP\TcpSessionServerHandler.cpp">
+    <ClCompile Include="ConcurrencyModel\TcpIOCP\TcpClientSessionHandler.cpp">
       <Filter>Source Files\ConcurrencyModel\TcpIOCP</Filter>
     </ClCompile>
   </ItemGroup>

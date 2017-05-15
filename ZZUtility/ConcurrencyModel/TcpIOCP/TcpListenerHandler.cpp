@@ -3,80 +3,93 @@
 #include <mswsock.h>
 #include "../IoCompletionPortModel.h"
 #include "TcpHandlerPrivateTypes.h"
-#include "TcpSessionServerHandler.h"
+#include "TcpServerSessionHandler.h"
 #include "TcpListenerHandler.h"
 
 
-CTcpListenerHandler::CTcpListenerHandler(void) : m(new CTcpListenerHandlerPrivate())
+CTcpListenerHandler::CTcpListenerHandler(void) : m(new CTcpListenerHandlerPrivate()), m_pServerSessionCreator(NULL)
 {
+	WSADATA wsaData = { 0 };
+	WSAStartup(MAKEWORD(2, 2), &wsaData);
 }
 
 CTcpListenerHandler::~CTcpListenerHandler(void)
 {
+	Destroy();
+	WSACleanup();
 	WaitDetachIocpModel();
 
 	delete m;
 }
 
-CTcpListenerHandler * CTcpListenerHandler::CreateAndAttachToIocp(USHORT sPort)
+BOOL CTcpListenerHandler::Create(USHORT usPort, ITcpServerSessionFactory *pCreator, CIoCompletionPortModel *pAttachIocp)
 {
-	SOCKET sListenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (INVALID_SOCKET == sListenSocket)
-		return NULL;
+	if (!InitializeListernSource(usPort))
+		return FALSE;
+
+	m_pServerSessionCreator = pCreator;
+	m->pIocpModel = pAttachIocp;
+	pAttachIocp->AttachHandler(this);
+
+	return TRUE;
+}
+
+BOOL CTcpListenerHandler::InitializeListernSource(USHORT usPort)
+{
+	m_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (INVALID_SOCKET == m_socket)
+	{
+		return FALSE;
+	}
 
 	struct sockaddr_in sockAddrIn = { 0 };
 	sockAddrIn.sin_family = AF_INET;
 	sockAddrIn.sin_addr.s_addr = ADDR_ANY;
-	sockAddrIn.sin_port = htons(sPort);
-	if (bind(sListenSocket, (struct sockaddr*)&sockAddrIn, sizeof(sockAddrIn)) != 0)
+	sockAddrIn.sin_port = htons(usPort);
+	if (bind(m_socket, (struct sockaddr*)&sockAddrIn, sizeof(sockAddrIn)) != 0)
 	{
-		closesocket(sListenSocket);
-		sListenSocket = INVALID_SOCKET;
-		return NULL;
+		closesocket(m_socket);
+		m_socket = INVALID_SOCKET;
+		return FALSE;
 	}
 
-	if (listen(sListenSocket, SOMAXCONN) != 0)
+	if (listen(m_socket, SOMAXCONN) != 0)
 	{
-		closesocket(sListenSocket);
-		sListenSocket = INVALID_SOCKET;
+		closesocket(m_socket);
+		m_socket = INVALID_SOCKET;
 		return FALSE;
 	}
 
 	GUID	guidAcceptEx = WSAID_ACCEPTEX;
 	DWORD	dwFunPointerSize = 0;
-	LPFN_ACCEPTEX lpfnAcceptEx;
-	if (WSAIoctl(sListenSocket, SIO_GET_EXTENSION_FUNCTION_POINTER,
-		&guidAcceptEx, sizeof(guidAcceptEx), &lpfnAcceptEx,
+	if (WSAIoctl(m_socket, SIO_GET_EXTENSION_FUNCTION_POINTER,
+		&guidAcceptEx, sizeof(guidAcceptEx), &m->fnAccepteEx,
 		sizeof(LPFN_ACCEPTEX), &dwFunPointerSize, nullptr, nullptr) != 0)
 	{
-		closesocket(sListenSocket);
-		sListenSocket = INVALID_SOCKET;
-		return NULL;
+		closesocket(m_socket);
+		m_socket = INVALID_SOCKET;
+		return FALSE;
 	}
 
-	CTcpListenerHandler *pListener = new CTcpListenerHandler();
-	pListener->m_socket = sListenSocket;
-	pListener->m->fnAccepteEx = lpfnAcceptEx;
-
-	return pListener;
+	return TRUE;
 }
 
 BOOL CTcpListenerHandler::OverlapForIOCompletion()
 {
-	if (m->pAcceptSession == NULL)
-		m->pAcceptSession = new CTcpSessionServerHandler();
+	m->pAcceptSession = m_pServerSessionCreator->CreateSession();
+	if (!m->pAcceptSession->Create(2048))
+			goto error_exit;
 
-	if (!m->pAcceptSession->Create(m_socket, 4096))
-		goto error_exit;
-
-	CTcpSessionServerHandlerPrivate *&pSessionMembers = m->pAcceptSession->m;
-	if (!m->fnAccepteEx(m_socket, m->pAcceptSession->m_socket, pSessionMembers->wsabuf.buf,
-		pSessionMembers->wsabuf.len - (sizeof(struct sockaddr_in) + 16) * 2,
+ 	CTcpServerSessionHandlerPrivate *&pSessionMembers = m->pAcceptSession->m;
+	if (m->fnAccepteEx(m_socket, m->pAcceptSession->m_socket, pSessionMembers->wsaBuf.buf, 0, 
 		sizeof(struct sockaddr_in) + 16, sizeof(struct sockaddr_in) + 16, // +16 详见 AcceptEx 函数参数 dwLocalAddressLength 和 dwRemoteAddressLength 
 		NULL, IocpAsyncOverlap()))
 	{
-		if (GetLastError() == ERROR_IO_PENDING)
-			return TRUE;
+		return TRUE;
+	}
+	else
+	{
+		return GetLastError() == ERROR_IO_PENDING;
 	}
 
 error_exit:
@@ -89,46 +102,47 @@ error_exit:
 
 BOOL CTcpListenerHandler::DataTransferTrigger(DWORD dwNumOfTransportBytes)
 {
-	if (dwNumOfTransportBytes != 0)
-	{
-		m->pAcceptSession->DataTransferTrigger(dwNumOfTransportBytes);
-		CIoCompletionPortModel::Instance()->AttachHandler(m->pAcceptSession);
-		m->pAcceptSession = NULL;
-	}
-
-	return TRUE;
-}
-
-BOOL CTcpListenerHandler::_InitSessionForAccept()
-{
-// 	if (AcceptEx(m_socket, m->pSessionForAccept->m_socket,
-// 		m->pSessionForAccept->m->wsaBuf.buf,
-// 		m->pSessionForAccept->m->wsaBuf.len - (sizeof(struct sockaddr_in) + 16) * 2,
-// 		sizeof(struct sockaddr_in) + 16, sizeof(struct sockaddr_in) + 16, nullptr,
-// 		IocpAsyncOverlap())) // +16 详见 AcceptEx 函数参数 dwLocalAddressLength 和 dwRemoteAddressLength 
-// 	{
-// 		if (WSAGetLastError() != WSA_IO_PENDING)
+// 	{ // TODO: 保留获取远程连接IP使用。
+// 		GUID	guidAcceptEx = WSAID_GETACCEPTEXSOCKADDRS;
+// 		DWORD	dwFunPointerSize = 0;
+// 		LPFN_GETACCEPTEXSOCKADDRS fnGetAcceptExSockAddrs;
+// 		if (WSAIoctl(m_socket, SIO_GET_EXTENSION_FUNCTION_POINTER,
+// 			&guidAcceptEx, sizeof(guidAcceptEx), &fnGetAcceptExSockAddrs,
+// 			sizeof(LPFN_GETACCEPTEXSOCKADDRS), &dwFunPointerSize, nullptr, nullptr) == 0)
 // 		{
+// 			struct sockaddr_in *pLocal, pRemote;
+// 			int iLocal, iRemote;
+// 			fnGetAcceptExSockAddrs(m->pAcceptSession->m->wsabuf.buf,
+// 				0,
+// 				sizeof(struct sockaddr_in) + 16, sizeof(struct sockaddr_in) + 16,
+// 				(struct sockaddr**)&pLocal, &iLocal, (struct sockaddr**)&pRemote, &iRemote);
 // 
-// 			return FALSE;
+// 			const char *pstrAddr = inet_ntoa(pLocal->sin_addr);
+// 			pstrAddr = pstrAddr;
 // 		}
 // 	}
 
+	if (!m->pIocpModel->AttachHandler(m->pAcceptSession))
+	{
+		delete m->pAcceptSession;
+	}
+	m_pServerSessionCreator->NewSessionTrigger(m->pAcceptSession);
+	m->pAcceptSession = NULL;
+
 	return TRUE;
 }
 
-BOOL CTcpListenerHandler::HandleRaiseError(DWORD dwErrorCode)
+void CTcpListenerHandler::HandleRaiseError(DWORD dwErrorCode)
 {
-	return FALSE;
 }
 
 void CTcpListenerHandler::Destroy()
 {
 	closesocket(m_socket);
 	m_socket = INVALID_SOCKET;
-}
 
-BOOL CTcpListenerHandler::IsDestroyed()
-{
-	return m_socket == INVALID_SOCKET;
+	delete m->pAcceptSession;
+	m->pAcceptSession = NULL;
+
+	m->pIocpModel = NULL;
 }

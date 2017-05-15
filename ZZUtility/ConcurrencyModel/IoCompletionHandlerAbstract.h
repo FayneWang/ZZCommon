@@ -83,11 +83,11 @@ protected:  // protected member.
 protected: // virtual function
     
     /**
-	 * 类对象在销毁时会被调用的成员函数。
+	 * 销毁对象的内部资源。
 	 *
-     * 内部实现调用CloseHandle销毁CIoCompletionHandlerAbstract::m_hHandle对象。
-	 * 如果派生类销毁对象时，有其他要销毁其他资源，可以重定义这个函数，实现销毁处理。
-	 * 但记得必须在重定义的函数未尾再调用一次这个函数。
+	 * 使用 CIoCompletionPortModel 对象的 void DetachHandler(CIoCompletionHandlerAbstract *)来解除类实例对象时会调用这个函数。
+	 * 函数内部必须实现销毁 m_hHandle 或 m_socket 句柄，并句柄赋值为 INVALID_HANDLE_VALUE 或 INVALID_SOCKET，以确保函数重入调用时造成异常。
+     * 函数必须实现为可重入的，避免重入调用时造成异常。
      */
     virtual void Destroy() = 0;
 
@@ -109,14 +109,6 @@ protected: // virtual function
 	 *
 	 */
     virtual BOOL DataTransferTrigger(DWORD dwNumOfTransportBytes) = 0;
-    
-	/**
-	 * 检查当前对象的IO是否已被销毁，与CIoCompletionPortModel对象保持关联。
-	 *
-	 * @return 当前对象的IO被销毁时，返回TRUE。返回FALSE时，与CIoCompletionPortMo-
-	 *		   del对象还维持关联关系。
-	 */
-    virtual BOOL IsDestroyed();
 
     /**
      * 当对象在完成端口模型中发生错误时，这个函数被会在完成端口线程中被回调。
@@ -127,7 +119,7 @@ protected: // virtual function
 	 * @return 当这个函数被回调处理时，函数内部有进行OVERLAPPED并且成功时，返回TRUE,
 	 *			否则返回FALSE。
      */
-    virtual BOOL HandleRaiseError(DWORD dwErrorCode) = 0;
+	virtual void HandleRaiseError(DWORD dwErrorCode){};
 
 	/**
 	 * 当类对象被成功CIoCompletionPortModel::Attach时，用这函数来确保对象被成功拆离
@@ -143,7 +135,6 @@ private:
 	 */
 	CIoCompletionHandlerAbstract(CIoCompletionHandlerAbstract &){}
 
-    BOOL _IsAutoDelete();
     void _AttachIocpModel(); // 用于多线程安全退出
     void _DetachIocpModel(); // 用于多线程安全退出
 

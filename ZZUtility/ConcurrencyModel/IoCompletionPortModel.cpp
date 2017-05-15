@@ -54,7 +54,6 @@ BOOL CIoCompletionPortModel::AttachHandler(CIoCompletionHandlerAbstract *pHandle
 		reinterpret_cast<ULONG_PTR>(pHandler), m->vtrThreadHandle.capacity());
    if (hIocp == NULL)
    {
-       pHandler->Destroy();
        m->attchedSetAndThreadSync.Leave();
        return FALSE;
    }
@@ -62,8 +61,8 @@ BOOL CIoCompletionPortModel::AttachHandler(CIoCompletionHandlerAbstract *pHandle
    pHandler->_AttachIocpModel();
    if (!pHandler->OverlapForIOCompletion())
    {
-	   pHandler->Destroy();
 	   m->attchedSetAndThreadSync.Leave();
+	   pHandler->_DetachIocpModel();
 	   return FALSE;
    }
    else
@@ -93,7 +92,6 @@ BOOL CIoCompletionPortModel::AttachHandler(CIoCompletionHandlerAbstract *pHandle
        pHandler->_DetachIocpModel();
        CloseHandle(m->hIocp);
        m->hIocp = NULL;
-       pHandler->Destroy();
        return FALSE;
    }
 
@@ -114,16 +112,9 @@ void CIoCompletionPortModel::DetachHandler(CIoCompletionHandlerAbstract *pHandle
     }
 
     m->setIocpAttchedObj.erase(pHandler);
-    m->attchedSetAndThreadSync.Leave();
+	m->attchedSetAndThreadSync.Leave();
 
-    if (pHandler->IsDestroyed())
-    {
-        pHandler->_DetachIocpModel();
-    }
-    else
-    {
-        pHandler->Destroy();
-    }
+	pHandler->Destroy(); // Destroy() 成员函数中需要将 与 m_hIocp句柄关联的对象销毁，才能确保关联系对象安全退出。
 }
 
 BOOL CIoCompletionPortModel::PostHandlerStatus(CIoCompletionHandlerAbstract *pHandler)
@@ -132,27 +123,16 @@ BOOL CIoCompletionPortModel::PostHandlerStatus(CIoCompletionHandlerAbstract *pHa
     return ::PostQueuedCompletionStatus(m->hIocp,0,reinterpret_cast<ULONG_PTR>(pHandler),NULL);
 }
 
-BOOL CIoCompletionPortModel::_IsExitProcessThread(CIoCompletionHandlerAbstract *pCompletionHandler)
+BOOL CIoCompletionPortModel::_DetachHanderl(CIoCompletionHandlerAbstract *pCompletionHandler)
 {
 	if (pCompletionHandler->m->lOverlappedCount == 0)
 	{
-		pCompletionHandler->Destroy();
-
 		m->attchedSetAndThreadSync.Enter();
 		m->setIocpAttchedObj.erase(pCompletionHandler);
 		BOOL bExit = m->setIocpAttchedObj.size() < m->vtrThreadHandle.size(); // 关联对象数量小于线程数时退出线程
 		m->attchedSetAndThreadSync.Leave();
 
-		if (pCompletionHandler->_IsAutoDelete())
-		{
-			pCompletionHandler->_DetachIocpModel();
-			delete pCompletionHandler;
-		}
-		else
-		{
-			pCompletionHandler->_DetachIocpModel();
-		}
-
+		pCompletionHandler->_DetachIocpModel(); //执行分离处理后， IOCP Handler对象可以完全脱离 IOCP模型对象。
 		return bExit;
 	}
 
@@ -167,8 +147,7 @@ void CIoCompletionPortModel::_IocpProc()
 
 	do
 	{
-		if (GetQueuedCompletionStatus(m->hIocp,&dwNumOfTransferredBytes,
-			&lCompletionKey,&lpOverlapped,INFINITE))
+		if (GetQueuedCompletionStatus(m->hIocp,&dwNumOfTransferredBytes,&lCompletionKey,&lpOverlapped,INFINITE))
 		{
 			if (lCompletionKey == NULL)
 			{
@@ -178,32 +157,17 @@ void CIoCompletionPortModel::_IocpProc()
 			CIoCompletionHandlerAbstract *pIocpHandler = reinterpret_cast<CIoCompletionHandlerAbstract *>(lCompletionKey);
 			if (pIocpHandler->DataTransferTrigger(dwNumOfTransferredBytes))
 			{
-				pIocpHandler->OverlapForIOCompletion();
-				// _InterlockedIncrement(&pIocpHandler->m->lOverlappedCount);
+				if (!pIocpHandler->OverlapForIOCompletion())
+				{
+					_InterlockedDecrement(&pIocpHandler->m->lOverlappedCount);
+				}
 			}
 			else
 			{
 				_InterlockedDecrement(&pIocpHandler->m->lOverlappedCount);
 			}
 
-// 			switch (pIocpHandler->m_iIoCompletionStatus)
-// 			{
-// 			case ICS_OVERLAP_HANDLE:
-// 				pIocpHandler->m_iIoCompletionStatus = ICS_LAST;
-// 				if(pIocpHandler->OverlapForIOCompletion())
-// 				{
-// 					_InterlockedIncrement(&pIocpHandler->m->lOverlappedCount);
-// 				}
-// 				break;
-// 			default:
-// 				if (pIocpHandler->DataTransferTrigger(dwNumOfTransferredBytes))
-// 				{
-// 					_InterlockedIncrement(&pIocpHandler->m->lOverlappedCount);
-// 				}
-// 				break;
-// 			}
-
-			if (_IsExitProcessThread(pIocpHandler))
+			if (_DetachHanderl(pIocpHandler))
 			{
 				break;  // exit loop of do{...}while(lCompletionKey != NULL).
 			}
@@ -213,12 +177,11 @@ void CIoCompletionPortModel::_IocpProc()
 			if (lCompletionKey != NULL)
 			{
 				// 已重叠的句柄在直接关闭或者通讯另一端关闭退出时，会到达这一步骤。
-				CIoCompletionHandlerAbstract *pIocpHandler = 
-					reinterpret_cast<CIoCompletionHandlerAbstract*>(lCompletionKey);
+				CIoCompletionHandlerAbstract *pIocpHandler = reinterpret_cast<CIoCompletionHandlerAbstract*>(lCompletionKey);
 				_InterlockedDecrement(&pIocpHandler->m->lOverlappedCount);
 				pIocpHandler->HandleRaiseError(GetLastError());
 
-				if (_IsExitProcessThread(pIocpHandler))
+				if (_DetachHanderl(pIocpHandler))
 				{
 					break;  // exit loop of do{...}while(lCompletionKey != NULL).
 				}

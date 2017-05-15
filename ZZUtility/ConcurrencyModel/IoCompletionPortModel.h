@@ -87,7 +87,7 @@ private:
 
 private:
 	void _ThreadHanleProc(HANDLE hThread);
-	BOOL _IsExitProcessThread(CIoCompletionHandlerAbstract *pCompletionHandler);
+	BOOL _DetachHanderl(CIoCompletionHandlerAbstract *pCompletionHandler);
     void _IocpProc();
     CIoCompletionPortModelPrivate *m;
 

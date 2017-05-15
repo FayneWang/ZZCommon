@@ -5,28 +5,27 @@
 #include <Windows.h>
 
 class CBuffer;
-class CTcpSessionServerHandlerPrivate
+class CTcpServerSessionHandlerPrivate
 {
 	friend class CTcpListenerHandler;
-	friend class CTcpSessionServerHandler;
-	WSABUF	wsabuf;
+	friend class CTcpServerSessionHandler;
+	WSABUF	wsaBuf;
 	CBuffer *pBuffer;
 };
 
+class CIoCompletionPortModel;
 class CTcpListenerHandlerPrivate
 {
 	friend class CTcpListenerHandler;
 
-	unsigned short				uServicePort;
- 	LPFN_ACCEPTEX				fnAccepteEx;
- 	LPFN_GETACCEPTEXSOCKADDRS	lpfnGetAcceptexSockAddrs;
+	CIoCompletionPortModel		*pIocpModel;
+	CTcpServerSessionHandler	*pAcceptSession;
 
-	CTcpSessionServerHandler *pAcceptSession;
+ 	LPFN_ACCEPTEX				fnAccepteEx;
 
 	CTcpListenerHandlerPrivate() :
-		uServicePort(0),
-		lpfnGetAcceptexSockAddrs(NULL),
-		fnAccepteEx(NULL),
-		pAcceptSession(NULL)
+		pIocpModel(0),
+		pAcceptSession(NULL),
+		fnAccepteEx(NULL)
 	{}
 };
