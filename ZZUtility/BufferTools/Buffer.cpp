@@ -3,7 +3,7 @@
 #include <assert.h>
 #include "Buffer.h"
 
-CBuffer::CBuffer(int32_t iSize /*= BUFER_DEFAULT_SIZE*/,bool bInitBuffer /*= false*/) :
+CBuffer::CBuffer(int iSize /*= BUFER_DEFAULT_SIZE*/,bool bInitBuffer /*= false*/) :
 	m_iSize(iSize > 0 ? iSize : 0),
 	m_pData(nullptr)
 {
@@ -37,17 +37,17 @@ bool CBuffer::InitBuffer()
 	return m_pData != nullptr;
 }
 
-const int32_t & CBuffer::GetCapacity() const
+const int & CBuffer::GetCapacity() const
 {
 	return m_iSize;
 }
 
-bool CBuffer::IncreaseCapacity(int32_t iSize)
+bool CBuffer::IncreaseCapacity(int iSize)
 {
 	if (iSize < 0)
 		return false;
 
-    int32_t iIncreasedSize = m_iSize + iSize;
+    int iIncreasedSize = m_iSize + iSize;
 	if (iIncreasedSize < 0 )
 		return false;
 
@@ -61,7 +61,7 @@ bool CBuffer::IncreaseCapacity(int32_t iSize)
 }
 
 
-bool CBuffer::Reserve(int32_t iSize)
+bool CBuffer::Reserve(int iSize)
 {
 	if (iSize < 0)
 		return false;

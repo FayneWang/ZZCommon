@@ -19,7 +19,7 @@ CTcpClientSessionHandler::CTcpClientSessionHandler() : m(new CTcpClientSessionHa
 
 CTcpClientSessionHandler::~CTcpClientSessionHandler()
 {
-	Destroy();
+	this->Destroy();
 	delete m;
 }
 
@@ -98,9 +98,12 @@ void CTcpClientSessionHandler::HandleRaiseError(DWORD dwErrorCode)
 
 void CTcpClientSessionHandler::Destroy()
 {
-	shutdown(m_socket, SD_BOTH);
-	closesocket(m_socket);
-	m_socket = INVALID_SOCKET;
-	delete m->pBuffer;
-	m->pBuffer = NULL;
+	if (m_socket != INVALID_SOCKET)
+	{
+		shutdown(m_socket, SD_BOTH);
+		closesocket(m_socket);
+		m_socket = INVALID_SOCKET;
+		delete m->pBuffer;
+		m->pBuffer = NULL;
+	}
 }

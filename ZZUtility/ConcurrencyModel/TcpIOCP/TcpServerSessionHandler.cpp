@@ -1,6 +1,7 @@
 
 #include <ZZUtility/BufferTools/Buffer.h>
 #include "TcpHandlerPrivateTypes.h"
+#include "../IoCompletionPortModel.h"
 #include "TcpServerSessionHandler.h"
 
 CTcpServerSessionHandler::CTcpServerSessionHandler() : m(new CTcpServerSessionHandlerPrivate())
@@ -16,11 +17,15 @@ CTcpServerSessionHandler::~CTcpServerSessionHandler()
 	delete m;
 }
 
-BOOL CTcpServerSessionHandler::Create(int iRecvBufferSize)
+BOOL CTcpServerSessionHandler::Create(SOCKET sAccepted, int iRecvBufferSize, CIoCompletionPortModel *pIocpModel)
 {
-	m_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (m_socket == INVALID_SOCKET)
+	if (sAccepted == INVALID_SOCKET || sAccepted ==0)
 		return FALSE;
+
+	m_socket = sAccepted;
+
+	if (iRecvBufferSize <= 0)
+		iRecvBufferSize = BUFER_DEFAULT_SIZE;
 
 	m->pBuffer = new CBuffer(iRecvBufferSize);
 	if (!m->pBuffer->InitBuffer())
@@ -30,6 +35,8 @@ BOOL CTcpServerSessionHandler::Create(int iRecvBufferSize)
 
 	m->wsaBuf.buf = m->pBuffer->Buffer();
 	m->wsaBuf.len = m->pBuffer->GetCapacity();
+	if (!pIocpModel->AttachHandler(this))
+		goto error_return;
 
 	return TRUE;
 
@@ -47,6 +54,11 @@ BOOL CTcpServerSessionHandler::Send(const void *pData, int iDataSize)
 	return send(m_socket,(const char*)pData,iDataSize,0) != SOCKET_ERROR;
 }
 
+CBuffer *CTcpServerSessionHandler::GetBufferObject()
+{
+	return m->pBuffer;
+}
+
 BOOL CTcpServerSessionHandler::OverlapForIOCompletion()
 {
 	DWORD dwFlags = 0;
@@ -62,20 +74,14 @@ BOOL CTcpServerSessionHandler::OverlapForIOCompletion()
 	return FALSE;
 }
 
-BOOL CTcpServerSessionHandler::DataTransferTrigger(DWORD dwNumOfTransportBytes)
-{
-	return FALSE;
-}
-
-void CTcpServerSessionHandler::HandleRaiseError(DWORD dwErrorCode)
-{
-}
-
 void CTcpServerSessionHandler::Destroy()
 {
-	shutdown(m_socket, SD_BOTH);
-	closesocket(m_socket);
-	m_socket = INVALID_SOCKET;
-	delete m->pBuffer;
-	m->pBuffer = NULL;
+	if (m_socket != INVALID_SOCKET)
+	{
+		shutdown(m_socket, SD_BOTH);
+		closesocket(m_socket);
+		m_socket = INVALID_SOCKET;
+		delete m->pBuffer;
+		m->pBuffer = NULL;
+	}
 }

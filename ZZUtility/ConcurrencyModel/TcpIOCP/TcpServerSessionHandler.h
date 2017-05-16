@@ -1,9 +1,10 @@
 #pragma once
 
-#include <stdint.h>
 #include <ZZUtility/DLLDefines.h>
 #include <ZZUtility/ConcurrencyModel/IoCompletionHandlerAbstract.h>
 
+class CBuffer;
+class CIoCompletionPortModel;
 class CTcpServerSessionHandlerPrivate;
 class _ZZUTILITY_EXTERN_ CTcpServerSessionHandler : public CIoCompletionHandlerAbstract
 {
@@ -13,19 +14,14 @@ private:
 public:
 	CTcpServerSessionHandler();
 	~CTcpServerSessionHandler();	
-	
-	BOOL Create(int iRecvBufferSize) ;
 
+	virtual BOOL Create(SOCKET sAccepted, int iRecvBufferSize, CIoCompletionPortModel *pIocpModel);
 	BOOL Send(const void *pData,int iDataSize);
+
 protected:
+	CBuffer *GetBufferObject();
 
 	virtual BOOL OverlapForIOCompletion() override;
-
-
-	virtual BOOL DataTransferTrigger(DWORD dwNumOfTransportBytes) override;
-
-
-	virtual void HandleRaiseError(DWORD dwErrorCode) override;
 
 
 	virtual void Destroy() override;

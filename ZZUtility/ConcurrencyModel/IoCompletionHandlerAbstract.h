@@ -10,27 +10,6 @@
 #include <wtypes.h>
 #include <ZZUtility/DLLDefines.h>
 
-// /**
-//  * @enum IoCompletionHandlerStatus
-//  *
-//  * @brief 完成端口信号处理类（CIoCompletionHandlerAbstract）对象当前的工作状态。
-//  *
-//  * 处理类对象与完成端口模型封装类CIoCompletionPortModel成功关联后的状态定义，这个状
-//  * 态决定处理类对象在接收到信号时下一步处理工作的方式。
-//  */
-// enum IoCompletionHandlerStatus
-// {
-//     ICS_OVERLAP_HANDLE,	/** @brief
-// 						 * 表示已关联的处理类对象当前的操作状态应该进行OVERLAPPED
-// 						 * 操作，即调用OverlapForIoOperation()的实现定义。
-// 						 */
-// 
-//     ICS_LAST,			/** @brief
-// 						 * CIoCompletionHandlerAbstract 派生类增加工作状态定义时的
-// 						 * 第一定状态枚举值，必须从这个值开始定义。
-// 						 */
-// };
-
 /**
  * @class CIoCompletionHandlerAbstract
  *

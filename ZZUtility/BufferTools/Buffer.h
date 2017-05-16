@@ -1,6 +1,5 @@
 #pragma once
 
-#include <stdint.h>
 #include <ZZUtility/DLLDefines.h>
 
 /**
@@ -25,7 +24,7 @@ public:
      * 构造函数
      * @param[in] uBlockSize    初始化时，一个字节内存块的大小；这个块值作为缓冲区自递增时的大小。
      */
-    CBuffer(int32_t iSize = BUFER_DEFAULT_SIZE,bool bInitBuffer = false);
+    CBuffer(int iSize = BUFER_DEFAULT_SIZE,bool bInitBuffer = false);
     ~CBuffer(void);		
 
 	bool InitBuffer();
@@ -39,25 +38,25 @@ public:
 	/**
 	 * 获取当前缓冲区内存空间的大小
 	 */
-	const int32_t & GetCapacity() const;
+	const int & GetCapacity() const;
 	
     /**
      * 根据缓冲区对象递增块添加缓冲区的空间
      * @param[in] uSize 增加缓冲区空间的大小。
      * @return 缓冲区空间增加成功时返回true,否则返回false.
      */
-    bool IncreaseCapacity(int32_t uSize);
+    bool IncreaseCapacity(int uSize);
 
     /**
      * 重置内存缓冲区的大小
      * @param[in] uSize 重置的内存大小
      * @return 调用成功时返回true,否则返回false。
      */
-    bool Reserve(int32_t iSize = BUFER_DEFAULT_SIZE);
+    bool Reserve(int iSize = BUFER_DEFAULT_SIZE);
 
 protected:
 	mutable char *	m_pData;
-	int32_t			m_iSize;
+	int			m_iSize;
 
 private:
 };

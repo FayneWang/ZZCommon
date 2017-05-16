@@ -38,6 +38,7 @@ void CIoCompletionHandlerAbstract::_AttachIocpModel()
 
 void CIoCompletionHandlerAbstract::_DetachIocpModel()
 {
+	this->Destroy();
 	if (m->bAutoDelete)
 	{
 		m->esModelTie.Signaled();

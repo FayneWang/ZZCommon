@@ -13,19 +13,17 @@ class CTcpServerSessionHandlerPrivate
 	CBuffer *pBuffer;
 };
 
-class CIoCompletionPortModel;
+//class CIoCompletionPortModel;
 class CTcpListenerHandlerPrivate
 {
 	friend class CTcpListenerHandler;
 
-	CIoCompletionPortModel		*pIocpModel;
-	CTcpServerSessionHandler	*pAcceptSession;
-
+	char						szAcceptBuffer[(sizeof(SOCKADDR_IN) + 16)*2];
+	SOCKET						sAccept;
  	LPFN_ACCEPTEX				fnAccepteEx;
 
 	CTcpListenerHandlerPrivate() :
-		pIocpModel(0),
-		pAcceptSession(NULL),
+		sAccept(INVALID_SOCKET),
 		fnAccepteEx(NULL)
 	{}
 };

@@ -7,7 +7,7 @@
 #include "TcpListenerHandler.h"
 
 
-CTcpListenerHandler::CTcpListenerHandler(void) : m(new CTcpListenerHandlerPrivate()), m_pServerSessionCreator(NULL)
+CTcpListenerHandler::CTcpListenerHandler(void) : m(new CTcpListenerHandlerPrivate()), m_pNewConnectCallback(NULL)
 {
 	WSADATA wsaData = { 0 };
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -22,16 +22,25 @@ CTcpListenerHandler::~CTcpListenerHandler(void)
 	delete m;
 }
 
-BOOL CTcpListenerHandler::Create(USHORT usPort, ITcpServerSessionFactory *pCreator, CIoCompletionPortModel *pAttachIocp)
+BOOL CTcpListenerHandler::Create(USHORT usPort, INewConnectionCallback *pCreator, CIoCompletionPortModel *pAttachIocp)
 {
 	if (!InitializeListernSource(usPort))
 		return FALSE;
 
-	m_pServerSessionCreator = pCreator;
-	m->pIocpModel = pAttachIocp;
+	m_pNewConnectCallback = pCreator;
 	pAttachIocp->AttachHandler(this);
 
 	return TRUE;
+}
+
+USHORT CTcpListenerHandler::GetListenPort()
+{
+	struct sockaddr_in listenAddr = { 0 };
+	int iAddrLen = sizeof(listenAddr);
+	if (getsockname(m_socket, (struct sockaddr*)&listenAddr, &iAddrLen) == SOCKET_ERROR)
+		return 0;
+
+	return ntohs(listenAddr.sin_port);
 }
 
 BOOL CTcpListenerHandler::InitializeListernSource(USHORT usPort)
@@ -76,13 +85,9 @@ BOOL CTcpListenerHandler::InitializeListernSource(USHORT usPort)
 
 BOOL CTcpListenerHandler::OverlapForIOCompletion()
 {
-	m->pAcceptSession = m_pServerSessionCreator->CreateSession();
-	if (!m->pAcceptSession->Create(2048))
-			goto error_exit;
-
- 	CTcpServerSessionHandlerPrivate *&pSessionMembers = m->pAcceptSession->m;
-	if (m->fnAccepteEx(m_socket, m->pAcceptSession->m_socket, pSessionMembers->wsaBuf.buf, 0, 
-		sizeof(struct sockaddr_in) + 16, sizeof(struct sockaddr_in) + 16, // +16 详见 AcceptEx 函数参数 dwLocalAddressLength 和 dwRemoteAddressLength 
+	m->sAccept = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (m->fnAccepteEx(m_socket, m->sAccept, m->szAcceptBuffer, 0, 
+		sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, // +16 详见 AcceptEx 函数参数 dwLocalAddressLength 和 dwRemoteAddressLength 
 		NULL, IocpAsyncOverlap()))
 	{
 		return TRUE;
@@ -94,9 +99,9 @@ BOOL CTcpListenerHandler::OverlapForIOCompletion()
 
 error_exit:
 
-	// TODO: handle error,and then restore work.
-	delete m->pAcceptSession;
-	m->pAcceptSession = NULL;
+	closesocket(m->sAccept);
+	m->sAccept = INVALID_SOCKET;
+
 	return FALSE;
 }
 
@@ -122,12 +127,7 @@ BOOL CTcpListenerHandler::DataTransferTrigger(DWORD dwNumOfTransportBytes)
 // 		}
 // 	}
 
-	if (!m->pIocpModel->AttachHandler(m->pAcceptSession))
-	{
-		delete m->pAcceptSession;
-	}
-	m_pServerSessionCreator->NewSessionTrigger(m->pAcceptSession);
-	m->pAcceptSession = NULL;
+ 	m_pNewConnectCallback->NewConnectionTrigger(m->sAccept);
 
 	return TRUE;
 }
@@ -140,9 +140,6 @@ void CTcpListenerHandler::Destroy()
 {
 	closesocket(m_socket);
 	m_socket = INVALID_SOCKET;
-
-	delete m->pAcceptSession;
-	m->pAcceptSession = NULL;
-
-	m->pIocpModel = NULL;
+	closesocket(m->sAccept);
+	m->sAccept = INVALID_SOCKET;
 }

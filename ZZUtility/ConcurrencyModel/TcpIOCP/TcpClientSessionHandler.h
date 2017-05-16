@@ -23,7 +23,6 @@ protected:
 
 	virtual void HandleRaiseError(DWORD dwErrorCode) override;
 
-
 	virtual void Destroy() override;
 
 private:
