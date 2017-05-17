@@ -34,6 +34,8 @@ public:
 	 */
 	BOOL Create(USHORT usPort, INewConnectionCallback *pCreator, CIoCompletionPortModel *pAttachIocp);
 
+	virtual void Destroy() override;
+
 	/**
 	 * 获取等待Tcp连接的监听端口。
 	 * 这个函数必须在Create(...)调用成功之后才有效。
@@ -48,7 +50,6 @@ protected:
 
 	virtual void HandleRaiseError(DWORD dwErrorCode) override;
 
-	virtual void Destroy() override;
 
 	INewConnectionCallback *m_pNewConnectCallback;
 

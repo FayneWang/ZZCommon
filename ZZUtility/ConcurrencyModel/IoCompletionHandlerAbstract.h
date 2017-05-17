@@ -40,6 +40,15 @@ public:
 	 */
     void SetAutoDelete(BOOL bAutoDelete);
 
+	/**
+	* 销毁对象的内部资源。
+	*
+	* 使用 CIoCompletionPortModel 对象的 void DetachHandler(CIoCompletionHandlerAbstract *)来解除类实例对象时会调用这个函数。
+	* 函数内部必须实现销毁 m_hHandle 或 m_socket 句柄，并句柄赋值为 INVALID_HANDLE_VALUE 或 INVALID_SOCKET，以确保函数重入调用时造成异常。
+	* 函数必须实现为可重入的，避免重入调用时造成异常。
+	*/
+	virtual void Destroy() = 0;
+
 protected:  // protected function
     OVERLAPPED *IocpAsyncOverlap();
 
@@ -61,14 +70,6 @@ protected:  // protected member.
 
 protected: // virtual function
     
-    /**
-	 * 销毁对象的内部资源。
-	 *
-	 * 使用 CIoCompletionPortModel 对象的 void DetachHandler(CIoCompletionHandlerAbstract *)来解除类实例对象时会调用这个函数。
-	 * 函数内部必须实现销毁 m_hHandle 或 m_socket 句柄，并句柄赋值为 INVALID_HANDLE_VALUE 或 INVALID_SOCKET，以确保函数重入调用时造成异常。
-     * 函数必须实现为可重入的，避免重入调用时造成异常。
-     */
-    virtual void Destroy() = 0;
 
     /**
      * 主要处理成员变量m_hHandle使用的资源与完成端口句柄进行重叠的内容。

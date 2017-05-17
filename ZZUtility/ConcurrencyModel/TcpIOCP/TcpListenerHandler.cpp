@@ -28,9 +28,9 @@ BOOL CTcpListenerHandler::Create(USHORT usPort, INewConnectionCallback *pCreator
 		return FALSE;
 
 	m_pNewConnectCallback = pCreator;
-	pAttachIocp->AttachHandler(this);
+	
 
-	return TRUE;
+	return pAttachIocp->AttachHandler(this);;
 }
 
 USHORT CTcpListenerHandler::GetListenPort()
@@ -96,8 +96,6 @@ BOOL CTcpListenerHandler::OverlapForIOCompletion()
 	{
 		return GetLastError() == ERROR_IO_PENDING;
 	}
-
-error_exit:
 
 	closesocket(m->sAccept);
 	m->sAccept = INVALID_SOCKET;
