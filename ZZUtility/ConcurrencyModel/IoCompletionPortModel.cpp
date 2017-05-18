@@ -210,7 +210,7 @@ void CIoCompletionPortModel::_IocpProc()
 	} while (lCompletionKey != NULL);
 }
 
-CIoCompletionPortModel * CIoCompletionPortModel::Instance()
+CIoCompletionPortModel * CIoCompletionPortModel::GetInstance()
 {
 	if (NULL == s_pSinglton)
 	{
@@ -228,9 +228,16 @@ CIoCompletionPortModel * CIoCompletionPortModel::Instance()
 
 void CIoCompletionPortModel::Uninstance()
 {
-	CIoCompletionPortModel *pObject = s_pSinglton;
-	s_pSinglton = NULL;
-	delete pObject;
+	// TODO: 用于以后未来在 这个类的完成端口线程中，如果没有对象关联便在完成响应线程中自动自我销毁人线程安全保证。
+	if (nullptr != s_pSinglton)
+	{
+		CMutexSync syncLock(TRUE, L"Local\\CPlayerTcpClientIpc");
+		if (nullptr != s_pSinglton)
+		{
+			delete s_pSinglton;
+			s_pSinglton = nullptr;
+		}
+	}
 }
 
 HANDLE CIoCompletionPortModel::GetHandle()

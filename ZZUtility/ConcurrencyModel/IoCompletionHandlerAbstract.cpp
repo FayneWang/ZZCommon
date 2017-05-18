@@ -40,12 +40,3 @@ void CIoCompletionHandlerAbstract::_DetachIocpModel()
 	m->esModelTie.Signaled(); 
 }
 
-void CIoCompletionHandlerAbstract::EnterThread()
-{
-	m->csCriticalLock.Enter();
-}
-
-void CIoCompletionHandlerAbstract::LeaveThread()
-{
-	m->csCriticalLock.Leave();
-}

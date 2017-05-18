@@ -66,7 +66,7 @@ public:
 	 * 
 	 * @return 完成端口模型的单例对象。
      */
-    static CIoCompletionPortModel *Instance();
+    static CIoCompletionPortModel *GetInstance();
     
     /**
      * 使用该接口来手动销毁单例对象，

@@ -12,7 +12,6 @@ class CIoCompletionHandlerAbstractPrivate
 	friend class CIoCompletionPortModel;
 	friend class CIoCompletionHandlerAbstract;
 
-	CCriticalSectionSync csCriticalLock;
     CEventSync  esModelTie;	 /* 
 							  * 当对象有信号时，表示IO完成对象还未初始化；初始化后，
 							  *	无信号。主要为了IO完成对象在完成端口线程中安全退出，

@@ -52,9 +52,6 @@ public:
 protected:  // protected function
     OVERLAPPED *IocpAsyncOverlap();
 
-	void	EnterThread();
-	void	LeaveThread();
-
 protected:  // protected member.
 
 	/// 关联完成端口时使用的可overlap的句柄。

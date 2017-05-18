@@ -136,8 +136,12 @@ void CTcpListenerHandler::HandleRaiseError(DWORD dwErrorCode)
 
 void CTcpListenerHandler::Destroy()
 {
-	closesocket(m_socket);
-	m_socket = INVALID_SOCKET;
-	closesocket(m->sAccept);
-	m->sAccept = INVALID_SOCKET;
+	if (m_socket != INVALID_SOCKET)
+	{
+		closesocket(m_socket);
+		m_socket = INVALID_SOCKET;
+		closesocket(m->sAccept);
+		m->sAccept = INVALID_SOCKET;
+		m_pNewConnectCallback = nullptr;
+	}
 }
