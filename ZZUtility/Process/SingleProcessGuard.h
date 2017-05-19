@@ -3,21 +3,20 @@
 #include <wtypes.h>
 #include <ZZUtility/DLLDefines.h>
 
-struct CSingletonProcessGuardPrivate;
 class _ZZUTILITY_EXTERN_ CSingleProcessGuard
 {
 public:
-    static HANDLE GuiadHandle(LPCWSTR pGuardName,BOOL bIsGlobal = FALSE);
-    static BOOL HasGuarded(LPCWSTR pGuardName,BOOL bIsGlobal = FALSE);
+	CSingleProcessGuard(void);
+	virtual ~CSingleProcessGuard(void);
 
-    BOOL GuardSingleProcess(LPCWSTR pGuardName,BOOL bIsGlobal = FALSE);
-    void UnguardSingleProcess();
+    BOOL Guard(LPCWSTR pGuardName,BOOL bIsGlobal = FALSE);
+	void Unguard();
 
-protected:
-    CSingleProcessGuard(void);
-    virtual ~CSingleProcessGuard(void) = 0;
+public:
+	static BOOL IsGuarded(LPCWSTR pGuardName, BOOL bIsGlobal = FALSE);
 
 private:
-    CSingletonProcessGuardPrivate *m;
+	HANDLE m_hGurad;
+
 };
 

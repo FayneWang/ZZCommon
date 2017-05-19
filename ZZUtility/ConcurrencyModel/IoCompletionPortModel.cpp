@@ -125,7 +125,7 @@ BOOL CIoCompletionPortModel::PostHandlerStatus(CIoCompletionHandlerAbstract *pHa
 	return ::PostQueuedCompletionStatus(m->hIocp, 0, reinterpret_cast<ULONG_PTR>(pHandler), NULL);
 }
 
-BOOL CIoCompletionPortModel::_DetachHanderl(CIoCompletionHandlerAbstract *pCompletionHandler)
+BOOL CIoCompletionPortModel::_ShouldDecreaseThread(CIoCompletionHandlerAbstract *pCompletionHandler)
 {
 	if (pCompletionHandler->m->lOverlappedCount == 0)
 	{
@@ -167,21 +167,28 @@ void CIoCompletionPortModel::_IocpProc()
 			}
 
 			CIoCompletionHandlerAbstract *pIocpHandler = reinterpret_cast<CIoCompletionHandlerAbstract *>(lCompletionKey);
-			if (pIocpHandler->DataTransferTrigger(dwNumOfTransferredBytes))
+			if (dwNumOfTransferredBytes == 0 && GetLastError() != 0)
 			{
-				if (!pIocpHandler->OverlapForIOCompletion())
-				{
-					_InterlockedDecrement(&pIocpHandler->m->lOverlappedCount);
-				}
+				pIocpHandler->HandleRaiseError(GetLastError());
+				_InterlockedDecrement(&pIocpHandler->m->lOverlappedCount);
+				if (_ShouldDecreaseThread(pIocpHandler))
+					break;  // exit loop of do{...}while(lCompletionKey != NULL).
 			}
 			else
 			{
-				_InterlockedDecrement(&pIocpHandler->m->lOverlappedCount);
-			}
+				if (!pIocpHandler->DataTransferTrigger(dwNumOfTransferredBytes))
+				{
+					_InterlockedDecrement(&pIocpHandler->m->lOverlappedCount);
+					if (_ShouldDecreaseThread(pIocpHandler))
+						break;  // exit loop of do{...}while(lCompletionKey != NULL).
+				}
 
-			if (_DetachHanderl(pIocpHandler))
-			{
-				break;  // exit loop of do{...}while(lCompletionKey != NULL).
+				if (!pIocpHandler->OverlapForIOCompletion())
+				{
+					_InterlockedDecrement(&pIocpHandler->m->lOverlappedCount);
+					if (_ShouldDecreaseThread(pIocpHandler))
+						break;  // exit loop of do{...}while(lCompletionKey != NULL).
+				}
 			}
 		}
 		else
@@ -192,7 +199,7 @@ void CIoCompletionPortModel::_IocpProc()
 				CIoCompletionHandlerAbstract *pIocpHandler = reinterpret_cast<CIoCompletionHandlerAbstract*>(lCompletionKey);
 				_InterlockedDecrement(&pIocpHandler->m->lOverlappedCount);
 				pIocpHandler->HandleRaiseError(GetLastError());
-				if (_DetachHanderl(pIocpHandler))
+				if (_ShouldDecreaseThread(pIocpHandler))
 				{
 					break;  // exit loop of do{...}while(lCompletionKey != NULL).
 				}

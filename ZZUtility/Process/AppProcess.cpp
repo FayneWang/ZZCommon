@@ -39,7 +39,7 @@ std::wstring CAppProcess::GetExeModuleFile()
 
 BOOL CAppProcess::Reboot(LPCWSTR lpParameters,int iExitCode)
 {
-	UnguardSingleProcess();
+	Unguard();
     if((int)ShellExecute(NULL,L"open",GetExeModuleFile().c_str(),lpParameters,NULL,SW_SHOW) <= 32)
     {
         return FALSE;

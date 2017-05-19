@@ -1,84 +1,52 @@
 
 #include <assert.h>
-#include <stdio.h>
 #include <Windows.h>
 #include "SingleProcessGuard.h"
 
-struct CSingletonProcessGuardPrivate
-{
-    HANDLE  hEvent;
-    UINT    uNotifyMsg;
 
-    CSingletonProcessGuardPrivate() : hEvent(NULL),uNotifyMsg(0)
-    {}
-};
-
-CSingleProcessGuard::CSingleProcessGuard(void) : m(new CSingletonProcessGuardPrivate())
+CSingleProcessGuard::CSingleProcessGuard(void) : m_hGurad(INVALID_HANDLE_VALUE)
 {}
 
 
 CSingleProcessGuard::~CSingleProcessGuard(void)
 {
-    CloseHandle(m->hEvent);
+	Unguard();
 }
 
-HANDLE CSingleProcessGuard::GuiadHandle(LPCWSTR pGuardName,BOOL bIsGlobal /*= FALSE*/)
+BOOL CSingleProcessGuard::Guard(LPCWSTR pGuardName,BOOL bIsGlobal /*= FALSE*/)
 {
-    WCHAR szPath[MAX_PATH] = L"";
-    wcscpy_s(szPath, bIsGlobal ?  L"Global\\" : L"Local\\");
-    wcscat_s(szPath,pGuardName);
-    assert(wcslen(pGuardName) < MAX_PATH);
-
-    return OpenMutex(MUTEX_ALL_ACCESS,TRUE,szPath);
-}
-
-BOOL CSingleProcessGuard::HasGuarded(LPCWSTR pGuardName,BOOL bIsGlobal)
-{
-    WCHAR szPath[MAX_PATH] = L"";
-    wcscpy_s(szPath, bIsGlobal ?  L"Global\\" : L"Local\\");
-    wcscat_s(szPath,pGuardName);
-    assert(wcslen(pGuardName) < MAX_PATH);
-
-    HANDLE hEvent = OpenMutex(MUTEX_ALL_ACCESS,TRUE,szPath);
-    if (hEvent == NULL)
-    {
-        return GetLastError() == ERROR_ACCESS_DENIED;
-    }
-
-    CloseHandle(hEvent);
-    return TRUE;
-}
-
-
-BOOL CSingleProcessGuard::GuardSingleProcess(LPCWSTR pGuardName, BOOL bIsGlobal)
-{
-    if (m->hEvent != NULL)
-        return FALSE;
-
-    assert(NULL != pGuardName);
+	if (pGuardName == NULL)
+		return FALSE;
 
     WCHAR szPath[MAX_PATH] = L"";
     wcscpy_s(szPath, bIsGlobal ?  L"Global\\" : L"Local\\");
     wcscat_s(szPath,pGuardName);
     assert(wcslen(pGuardName) < MAX_PATH);
 
-    m->hEvent = CreateMutex(NULL,TRUE,szPath);
-    if (NULL == m->hEvent || 
-        ERROR_ALREADY_EXISTS == GetLastError())
-    {
-        return FALSE;
-    }
+	m_hGurad = ::CreateMutex(NULL, FALSE, szPath);
 
-    return TRUE;
+	return m_hGurad != INVALID_HANDLE_VALUE; 
+}
+
+void CSingleProcessGuard::Unguard()
+{
+	CloseHandle(m_hGurad);
+	m_hGurad = INVALID_HANDLE_VALUE;
 }
 
 
-void CSingleProcessGuard::UnguardSingleProcess()
+BOOL CSingleProcessGuard::IsGuarded(LPCWSTR pGuardName, BOOL bIsGlobal)
 {
-    if (m->hEvent == NULL)
-        return;
+	if (pGuardName == NULL)
+		return FALSE;
 
-    HANDLE hEvent = m->hEvent;
-    m->hEvent = NULL;
-    CloseHandle(hEvent);
+	WCHAR szPath[MAX_PATH] = L"";
+	wcscpy_s(szPath, bIsGlobal ? L"Global\\" : L"Local\\");
+	wcscat_s(szPath, pGuardName);
+	assert(wcslen(pGuardName) < MAX_PATH);
+
+	HANDLE hEvent = OpenMutex(MUTEX_ALL_ACCESS, TRUE, szPath);
+	CloseHandle(hEvent);
+
+	return hEvent != NULL;
 }
